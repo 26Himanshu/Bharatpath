@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginFarmer } from '../services/api';
+import { auth, googleProvider } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
+import { useAuth } from '../AuthContext';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
   const navigate = useNavigate();
+  const { loginWithEmail } = useAuth();
 
   const handleSubmit = async () => {
     if (!form.email || !form.password) {
@@ -19,12 +23,32 @@ export default function Login() {
     setError(null);
     try {
       const res = await loginFarmer(form);
-      setSuccess(`Welcome back, ${res.data.name}! 🌾 Redirecting...`);
-      setTimeout(() => navigate('/'), 1500);
+      loginWithEmail({
+      name: res.data.name,
+      email: form.email,
+      photo: null,
+      provider: 'email',
+      });
+    setSuccess(`Welcome back, ${res.data.name}! 🌾 Redirecting...`);
+    setTimeout(() => navigate('/'), 1500);
     } catch (err) {
       setError('Invalid email or password. Please try again.');
     }
     setLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    setError(null);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      setSuccess(`Welcome, ${user.displayName}! 🌾 Redirecting...`);
+      setTimeout(() => navigate('/'), 1500);
+    } catch (err) {
+      setError('Google sign-in failed. Please try again.');
+    }
+    setGoogleLoading(false);
   };
 
   return (
@@ -52,6 +76,30 @@ export default function Login() {
           </div>
         )}
 
+        {/* Google Login Button */}
+        <button
+          onClick={handleGoogleLogin}
+          disabled={googleLoading}
+          className="w-full flex items-center justify-center space-x-3 py-3 border-2 border-gray-200 hover:border-green-400 rounded-xl transition mb-4 bg-white hover:bg-green-50"
+        >
+          <img
+            src="https://www.google.com/favicon.ico"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          <span className="font-medium text-gray-700">
+            {googleLoading ? 'Signing in...' : 'Continue with Google'}
+          </span>
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="flex-1 h-px bg-gray-200"></div>
+          <span className="text-gray-400 text-sm">or login with email</span>
+          <div className="flex-1 h-px bg-gray-200"></div>
+        </div>
+
+        {/* Email/Password Form */}
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>

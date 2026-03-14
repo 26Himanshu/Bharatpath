@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerFarmer } from '../services/api';
+import { auth, googleProvider } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const CROPS = ['Wheat', 'Rice', 'Tomato', 'Onion', 'Potato', 'Mustard', 'Cotton', 'Sugarcane', 'Other'];
 
@@ -13,6 +15,21 @@ export default function Register() {
   const [success, setSuccess] = useState(null);
 
   const navigate = useNavigate();
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const handleGoogleRegister = async () => {
+  setGoogleLoading(true);
+  setError(null);
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    setSuccess(`Welcome, ${user.displayName}! Account created. Redirecting...`);
+    setTimeout(() => navigate('/'), 1500);
+  } catch (err) {
+    setError('Google sign-in failed. Please try again.');
+  }
+  setGoogleLoading(false);
+};
 
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.password) {
@@ -58,6 +75,29 @@ export default function Register() {
             ⚠️ {error}
           </div>
         )}
+
+        {/* Google Register Button */}
+      <button
+       onClick={handleGoogleRegister}
+       disabled={googleLoading}
+       className="w-full flex items-center justify-center space-x-3 py-3 border-2 border-gray-200 hover:border-green-400 rounded-xl transition mb-4 bg-white hover:bg-green-50"
+  >
+      <img
+       src="https://www.google.com/favicon.ico"
+       alt="Google"
+       className="w-5 h-5"
+      />
+     <span className="font-medium text-gray-700">
+      {googleLoading ? 'Signing in...' : 'Continue with Google'}
+     </span>
+     </button>
+
+    {/* Divider */}
+     <div className="flex items-center space-x-3 mb-4">
+     <div className="flex-1 h-px bg-gray-200"></div>
+     <span className="text-gray-400 text-sm">or register with email</span>
+     <div className="flex-1 h-px bg-gray-200"></div>
+    </div>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
