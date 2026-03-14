@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerFarmer } from '../services/api';
 
 const CROPS = ['Wheat', 'Rice', 'Tomato', 'Onion', 'Potato', 'Mustard', 'Cotton', 'Sugarcane', 'Other'];
@@ -11,6 +11,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!form.name || !form.email || !form.password) {
@@ -24,7 +26,8 @@ export default function Register() {
         ...form,
         farm_size: form.farm_size ? parseFloat(form.farm_size) : null,
       });
-      setSuccess('Registration successful! You can now login. 🎉');
+      setSuccess('Registration successful! Redirecting...');
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     }

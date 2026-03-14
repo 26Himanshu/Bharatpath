@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginFarmer } from '../services/api';
 
 export default function Login() {
@@ -7,6 +7,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (!form.email || !form.password) {
@@ -17,7 +19,8 @@ export default function Login() {
     setError(null);
     try {
       const res = await loginFarmer(form);
-      setSuccess(`Welcome back, ${res.data.name}! 🌾`);
+      setSuccess(`Welcome back, ${res.data.name}! 🌾 Redirecting...`);
+      setTimeout(() => navigate('/'), 1500);
     } catch (err) {
       setError('Invalid email or password. Please try again.');
     }
