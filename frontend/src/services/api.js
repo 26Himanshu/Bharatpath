@@ -7,6 +7,9 @@ const API = axios.create({
 export const registerFarmer = (data) => API.post('/auth/register', data);
 export const loginFarmer = (data) => API.post('/auth/login', data);
 export const detectDisease = (formData) => API.post('/disease/detect', formData);
-export const getBestMandi = (data) => API.post('/mandi/best-mandi', data);
-export const getPricePrediction = (crop, mandi) => API.get('/mandi/price-prediction', { params: { crop, mandi } });
+export const getBestMandi = (crop, quantity, district) =>
+  API.get('/mandi/best-mandi', { params: { crop, quantity, farmer_district: district } });
+
+export const getPricePrediction = (crop) =>
+  API.get('/mandi/price-prediction', { params: { crop } });
 export const getAllSchemes = () => API.get('/schemes/all');
