@@ -16,6 +16,7 @@ export default function Navbar() {
   { path: '/profit', label: 'Profit Tracker', icon: '💰' },
   { path: '/schemes', label: 'Gov. Schemes', icon: '🏛️' },
   { path: '/weather', label: 'Weather', icon: '🌤️' },
+  { path: '/mandi-map', label: 'Mandi Map', icon: '🗺️' },
 ];
 
   const isActive = (path) => location.pathname === path;

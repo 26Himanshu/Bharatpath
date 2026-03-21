@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Weather from './pages/Weather';
+import MandiMap from './pages/MandiMap';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/weather" element={<Weather />} />
+          <Route path="/mandi-map" element={<MandiMap />} />
         </Routes>
       </div>
     </BrowserRouter>
