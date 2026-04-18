@@ -218,6 +218,38 @@ export default function Weather() {
                 </div>
               </motion.div>
 
+              {/* Seasonal Crop Suggestions */}
+            <motion.div
+            className="bg-white rounded-2xl border border-gray-100 p-5 mb-6"
+            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.06)' }}
+          >
+          <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-gray-800 text-lg">🌾 Seasonal Crop Suggestions</h3>
+         <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">
+        {weather.season}
+        </span>
+      </div>
+      <p className="text-gray-500 text-sm mb-3">{weather.seasonal_advice}</p>
+      <div className="flex flex-wrap gap-2">
+      {weather.recommended_crops?.map((crop, i) => (
+      <motion.span key={i}
+        className="px-3 py-1.5 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: i * 0.08 }}
+        whileHover={{ scale: 1.05 }}
+      >
+        {crop}
+      </motion.span>
+      ))}
+      </div>
+      <p className="text-gray-400 text-xs mt-3">
+      📅 Based on current month: {weather.current_month} | Season: {weather.season}
+    </p>
+      </motion.div>
+
               {/* Forecast */}
               {forecast && (
                 <motion.div

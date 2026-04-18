@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginFarmer } from '../services/api';
 import { auth, googleProvider } from '../firebase';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { useAuth } from '../AuthContext';
 
 export default function Login() {
@@ -50,6 +50,19 @@ export default function Login() {
     }
     setGoogleLoading(false);
   };
+
+  const handleForgotPassword = async () => {
+  if (!form.email) {
+    setError('Please enter your email address first');
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, form.email);
+    setSuccess(`Password reset email sent to ${form.email} ✅ Check your inbox!`);
+  } catch (err) {
+    setError('Could not send reset email. Please check your email address.');
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4">
@@ -122,6 +135,27 @@ export default function Login() {
               className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
+
+          <div>
+          <div className="flex justify-between items-center mb-1">
+          <label className="block text-sm font-medium text-gray-600">Password</label>
+        <button
+        onClick={handleForgotPassword}
+        className="text-xs text-green-600 hover:underline font-medium"
+        type="button"
+      >
+      Forgot Password?
+    </button>
+  </div>
+  <input
+    type="password"
+    placeholder="Enter your password"
+    value={form.password}
+    onChange={(e) => setForm({ ...form, password: e.target.value })}
+    onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+    className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50 text-gray-700 transition"
+  />
+</div>
 
           <button
             onClick={handleSubmit}
