@@ -32,6 +32,8 @@ export default function Profile() {
     organicCertified: false, soilHealthCard: false,
     farmingCapacity: '',
   });
+  const [customCrop, setCustomCrop] = useState('');
+  const [showCropPopup, setShowCropPopup] = useState(false);  
 
   const profileComplete = () => {
     const required = ['state', 'district', 'landSize', 'primaryCrop', 'irrigationType', 'fertilizerType'];
@@ -241,14 +243,83 @@ export default function Profile() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Primary Crop *</label>
-                  <select value={farmDetails.primaryCrop}
-                    onChange={(e) => setFarmDetails({ ...farmDetails, primaryCrop: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50">
-                    <option value="">Select Primary Crop</option>
-                    {CROPS.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
+  <label className="block text-sm font-medium text-gray-600 mb-1">Primary Crop *</label>
+  <select
+    value={farmDetails.primaryCrop === customCrop && customCrop ? 'Other' : farmDetails.primaryCrop}
+    onChange={(e) => {
+      if (e.target.value === 'Other') {
+        setShowCropPopup(true);
+      } else {
+        setFarmDetails({ ...farmDetails, primaryCrop: e.target.value });
+        setCustomCrop('');
+      }
+    }}
+    className="w-full border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-50"
+  >
+    <option value="">Select Primary Crop</option>
+    {CROPS.map(c => <option key={c} value={c}>{c}</option>)}
+  </select>
+
+  {/* Show custom crop name if entered */}
+  {customCrop && (
+    <div className="mt-2 flex items-center space-x-2 p-2 bg-green-50 border border-green-200 rounded-xl">
+      <span className="text-green-600 text-sm">🌾 Custom crop: <strong>{customCrop}</strong></span>
+      <button onClick={() => { setCustomCrop(''); setFarmDetails({ ...farmDetails, primaryCrop: '' }); }}
+        className="text-red-400 text-xs ml-auto">✕ Clear</button>
+    </div>
+  )}
+
+  {/* Crop Popup */}
+  {showCropPopup && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <motion.div
+        className="bg-white rounded-2xl p-6 w-80 shadow-2xl mx-4"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+      >
+        <h3 className="font-bold text-gray-800 text-lg mb-1">🌾 Enter Your Crop</h3>
+        <p className="text-gray-400 text-sm mb-4">Type the name of your primary crop</p>
+        <input
+          type="text"
+          placeholder="e.g. Jowar, Bajra, Ragi..."
+          value={customCrop}
+          autoFocus
+          onChange={(e) => setCustomCrop(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && customCrop.trim()) {
+              setFarmDetails({ ...farmDetails, primaryCrop: customCrop.trim() });
+              setShowCropPopup(false);
+            }
+          }}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-400 mb-4"
+        />
+        <div className="flex space-x-2">
+          <button
+            onClick={() => {
+              setShowCropPopup(false);
+              setCustomCrop('');
+              setFarmDetails({ ...farmDetails, primaryCrop: '' });
+            }}
+            className="flex-1 py-2 border border-gray-200 rounded-xl text-gray-500 text-sm hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              if (customCrop.trim()) {
+                setFarmDetails({ ...farmDetails, primaryCrop: customCrop.trim() });
+                setShowCropPopup(false);
+              }
+            }}
+            className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold"
+          >
+            ✅ Confirm
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )}
+</div>
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Secondary Crops</label>
                   <input type="text" placeholder="e.g. Tomato, Onion"

@@ -15,10 +15,20 @@ export default function MSPAlert() {
   const [checkResult, setCheckResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loadingDots, setLoadingDots] = useState('');
 
   useEffect(() => {
     getMSPPrices().then(res => setMspData(res.data)).catch(() => {});
   }, []);
+
+  // Animated dots for loading
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setLoadingDots(prev => prev.length >= 3 ? '' : prev + '.');
+    }, 500);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleCheck = async () => {
     if (!selectedCrop || !quantity) {
@@ -31,12 +41,12 @@ export default function MSPAlert() {
     try {
       const res = await getBestMandi(selectedCrop, parseFloat(quantity), '');
       if (res.data.error) {
-        setError(res.data.error);
+        setError(`${res.data.error} — Government API may be slow. Please wait and try again.`);
       } else {
         setCheckResult(res.data);
       }
     } catch {
-      setError('Could not fetch data. Please try again.');
+      setError('Government API is currently slow. Please try again in 30 seconds.');
     }
     setLoading(false);
   };
@@ -62,12 +72,12 @@ export default function MSPAlert() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-4xl font-black mb-2">📢 MSP Price Alerts</h1>
             <p className="text-orange-100">Compare live mandi prices with Government Minimum Support Price</p>
-            <div className="flex items-center space-x-3 mt-3">
+            <div className="flex items-center space-x-3 mt-3 flex-wrap gap-2">
               <span className="px-3 py-1 bg-white bg-opacity-20 rounded-full text-white text-xs border border-white border-opacity-30">
                 🏛️ MSP 2025-26 — Ministry of Agriculture
               </span>
               <span className="px-3 py-1 bg-white bg-opacity-20 rounded-full text-white text-xs border border-white border-opacity-30">
-                📊 Live Mandi Data
+                📊 Live Mandi Data — data.gov.in
               </span>
             </div>
           </motion.div>
@@ -86,7 +96,7 @@ export default function MSPAlert() {
             <strong>Minimum Support Price (MSP)</strong> is the price at which the Government of India
             guarantees to buy your crop. If mandi prices fall below MSP, you can sell to government
             procurement centers (FCI, NAFED) at the guaranteed MSP price.
-            <strong> Never sell below MSP!</strong>
+            <strong className="text-red-600"> Never sell below MSP!</strong>
           </p>
         </motion.div>
 
@@ -97,12 +107,12 @@ export default function MSPAlert() {
           transition={{ delay: 0.1 }}
           style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
         >
-          <h2 className="text-xl font-bold text-gray-800 mb-4">🔍 Check Your Crop Price</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">🔍 Check Your Crop Price vs MSP</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Select Crop</label>
               <select value={selectedCrop}
-                onChange={(e) => { setSelectedCrop(e.target.value); setCheckResult(null); }}
+                onChange={(e) => { setSelectedCrop(e.target.value); setCheckResult(null); setError(null); }}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-gray-50"
               >
                 <option value="">Select Crop</option>
@@ -114,23 +124,81 @@ export default function MSPAlert() {
               <input type="number" value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="e.g. 500"
+                onKeyDown={(e) => e.key === 'Enter' && handleCheck()}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-gray-50"
               />
             </div>
             <div className="flex items-end">
-              <motion.button onClick={handleCheck} disabled={loading}
-                className="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition shadow-md"
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              <motion.button
+                onClick={handleCheck}
+                disabled={loading}
+                className={`w-full py-3 rounded-xl font-bold text-white transition shadow-md ${
+                  loading
+                    ? 'bg-orange-400 cursor-not-allowed'
+                    : 'bg-orange-600 hover:bg-orange-700'
+                }`}
+                whileHover={!loading ? { scale: 1.02 } : {}}
+                whileTap={!loading ? { scale: 0.98 } : {}}
               >
-                {loading ? '🔄 Checking...' : '📢 Check MSP Alert'}
+                {loading ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      className="inline-block"
+                    >
+                      ⏳
+                    </motion.span>
+                    <span>Fetching live data{loadingDots}</span>
+                  </span>
+                ) : '📢 Check MSP Alert'}
               </motion.button>
             </div>
           </div>
+
+          {/* Loading info message */}
+          <AnimatePresence>
+            {loading && (
+              <motion.div
+                className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-xl"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1">
+                    {[0, 1, 2].map(i => (
+                      <motion.div key={i}
+                        className="w-2 h-2 bg-orange-400 rounded-full"
+                        animate={{ y: [-3, 3, -3] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.2 }}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-orange-700 text-sm">
+                    Fetching live mandi prices from Government of India (data.gov.in)...
+                    <span className="text-orange-500 text-xs block mt-0.5">
+                      This may take up to 30 seconds — please wait ⏳
+                    </span>
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {error && (
-            <motion.p className="text-red-500 text-sm mt-3 bg-red-50 p-2 rounded-lg"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              ⚠️ {error}
-            </motion.p>
+            <motion.div
+              className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            >
+              <p className="text-red-500 text-sm">⚠️ {error}</p>
+              <button
+                onClick={handleCheck}
+                className="mt-2 text-xs text-orange-600 font-bold underline hover:no-underline"
+              >
+                🔄 Try Again
+              </button>
+            </motion.div>
           )}
         </motion.div>
 
@@ -144,10 +212,10 @@ export default function MSPAlert() {
                 📊 MSP Analysis for {checkResult.crop}
               </h2>
 
-              {/* MSP Summary Card */}
+              {/* Summary Cards */}
               <div className="bg-white rounded-2xl border border-gray-100 p-5 mb-4"
                 style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-orange-50 rounded-xl border border-orange-100">
                     <p className="text-gray-500 text-xs mb-1">Government MSP</p>
                     <p className="text-2xl font-black text-orange-600">₹{checkResult.msp_price}</p>
@@ -156,37 +224,38 @@ export default function MSPAlert() {
                   <div className="text-center p-3 bg-green-50 rounded-xl border border-green-100">
                     <p className="text-gray-500 text-xs mb-1">Best Mandi Price</p>
                     <p className="text-2xl font-black text-green-600">
-                      ₹{checkResult.recommendations[0]?.price || 0}
+                      ₹{checkResult.recommendations?.[0]?.price || 0}
                     </p>
                     <p className="text-gray-400 text-xs">per quintal</p>
                   </div>
                   <div className={`text-center p-3 rounded-xl border ${
-                    checkResult.recommendations[0]?.msp_diff >= 0
+                    (checkResult.recommendations?.[0]?.msp_diff || 0) >= 0
                       ? 'bg-green-50 border-green-100'
                       : 'bg-red-50 border-red-100'
                   }`}>
                     <p className="text-gray-500 text-xs mb-1">Difference</p>
                     <p className={`text-2xl font-black ${
-                      checkResult.recommendations[0]?.msp_diff >= 0 ? 'text-green-600' : 'text-red-600'
+                      (checkResult.recommendations?.[0]?.msp_diff || 0) >= 0
+                        ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {checkResult.recommendations[0]?.msp_diff >= 0 ? '+' : ''}
-                      ₹{checkResult.recommendations[0]?.msp_diff || 0}
+                      {(checkResult.recommendations?.[0]?.msp_diff || 0) >= 0 ? '+' : ''}
+                      ₹{checkResult.recommendations?.[0]?.msp_diff || 0}
                     </p>
                     <p className="text-gray-400 text-xs">per quintal</p>
                   </div>
                   <div className="text-center p-3 bg-blue-50 rounded-xl border border-blue-100">
                     <p className="text-gray-500 text-xs mb-1">Your Revenue</p>
                     <p className="text-2xl font-black text-blue-600">
-                      ₹{checkResult.recommendations[0]?.estimated_revenue?.toLocaleString() || 0}
+                      ₹{checkResult.recommendations?.[0]?.estimated_revenue?.toLocaleString() || 0}
                     </p>
                     <p className="text-gray-400 text-xs">for {checkResult.quantity}kg</p>
                   </div>
                 </div>
               </div>
 
-              {/* Mandi Cards with MSP Alert */}
+              {/* Mandi Cards */}
               <div className="space-y-3">
-                {checkResult.recommendations.map((mandi, i) => {
+                {checkResult.recommendations?.map((mandi, i) => {
                   const style = getAlertStyle(mandi.msp_alert);
                   return (
                     <motion.div key={i}
@@ -199,7 +268,7 @@ export default function MSPAlert() {
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <div className="flex items-center space-x-2 mb-1">
+                          <div className="flex items-center space-x-2 mb-1 flex-wrap gap-1">
                             <span className="text-2xl">
                               {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}
                             </span>
@@ -209,6 +278,7 @@ export default function MSPAlert() {
                             </span>
                           </div>
                           <p className="text-gray-500 text-sm">📍 {mandi.district}, {mandi.state}</p>
+                          <p className="text-gray-400 text-xs mt-0.5">📅 {mandi.date}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-3xl font-black text-green-600">₹{mandi.price}</p>
@@ -216,7 +286,6 @@ export default function MSPAlert() {
                         </div>
                       </div>
 
-                      {/* MSP Alert Message */}
                       <div className={`p-3 rounded-xl border ${style.border} ${style.bg} mb-3`}>
                         <p className={`font-bold text-sm ${style.text}`}>{mandi.msp_message}</p>
                         {mandi.msp_diff_percent !== 0 && (
@@ -248,7 +317,7 @@ export default function MSPAlert() {
             transition={{ delay: 0.3 }}
             style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h2 className="text-xl font-bold text-gray-800">🏛️ Government MSP Rates 2025-26</h2>
               <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
                 {mspData.source}
@@ -261,10 +330,10 @@ export default function MSPAlert() {
                   <motion.div key={i}
                     className={`p-3 rounded-xl border text-center cursor-pointer transition ${
                       selectedCrop === crop
-                        ? 'bg-orange-50 border-orange-300'
+                        ? 'bg-orange-50 border-orange-300 shadow-md'
                         : 'bg-gray-50 border-gray-200 hover:bg-orange-50 hover:border-orange-200'
                     }`}
-                    onClick={() => setSelectedCrop(crop)}
+                    onClick={() => { setSelectedCrop(crop); setCheckResult(null); }}
                     whileHover={{ scale: 1.03 }}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -277,7 +346,7 @@ export default function MSPAlert() {
                 ))}
             </div>
             <p className="text-gray-400 text-xs mt-4 text-center">
-              * Click any crop to select it for MSP check above
+              💡 Click any crop to auto-select it for MSP check above
             </p>
           </motion.div>
         )}

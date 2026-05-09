@@ -45,8 +45,10 @@ export default function HomePage() {
               <span>Live Government Data — data.gov.in</span>
             </motion.div>
 
-            <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight">
-              🌾 BharatPath
+            <h1 className="text-5xl md:text-7xl font-black mb-4 leading-tight flex items-center justify-center space-x-4">
+            <span style={{ transform: 'scaleX(-1)', display: 'inline-block' }}>🌾</span>
+            <span>BharatPath</span>
+            <span>🌾</span>
             </h1>
             <p className="text-2xl md:text-3xl font-bold text-green-100 mb-2">
               किसान का स्मार्ट साथी
