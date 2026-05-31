@@ -190,12 +190,6 @@ due to its large size — train it using `ai-model/train_model.py`.
 
 ## 👥 Team
 
-| Member | Role | Branch |
-|--------|------|--------|
-| Shivam Kumar | Backend + AI Lead | `feature/backend` |
-| Member 2 | Frontend Lead | `feature/frontend` |
-| Member 3 | Data + Testing | `feature/data-testing` |
-
 ---
 
 ## 📊 Data Sources
