@@ -16,7 +16,7 @@
 
 Bharat-Path is an MSc Informatics project that integrates multiple
 AI and data technologies to help farmers make better decisions.
-The platform provides crop disease detection, market price 
+The platform provides crop health detection, market price 
 optimization, price trend prediction, farm profit analytics, 
 and government scheme awareness — all in one place.
 
@@ -77,7 +77,7 @@ BharatPath/
 │   ├── routes/
 │   │   ├── __init__.py
 │   │   ├── auth.py             # Farmer registration & login
-│   │   ├── disease.py          # Crop disease detection
+│   │   ├── disease.py          # Crop Health detection
 │   │   ├── mandi.py            # Mandi optimizer & price prediction
 │   │   ├── profit.py           # Profit tracker
 │   │   └── schemes.py          # Government schemes

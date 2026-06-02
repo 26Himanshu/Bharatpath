@@ -86,7 +86,7 @@ const priceData = [
 ];
 
 const quickLinks = [
-  { path: '/disease', label: 'Crop Disease', icon: '🔬', desc: 'AI leaf diagnosis', bg: 'bg-green-50', border: 'border-green-200', icon_bg: 'bg-green-100', text: 'text-green-700' },
+  { path: '/health', label: 'Crop Health', icon: '🔬', desc: 'AI crop diagnosis', bg: 'bg-green-50', border: 'border-green-200', icon_bg: 'bg-green-100', text: 'text-green-700' },
   { path: '/mandi', label: 'Mandi Prices', icon: '📊', desc: 'Live govt prices', bg: 'bg-blue-50', border: 'border-blue-200', icon_bg: 'bg-blue-100', text: 'text-blue-700' },
   { path: '/mandi-map', label: 'Mandi Map', icon: '🗺️', desc: 'Find nearby mandis', bg: 'bg-purple-50', border: 'border-purple-200', icon_bg: 'bg-purple-100', text: 'text-purple-700' },
   { path: '/weather', label: 'Weather', icon: '🌤️', desc: 'Farm forecast', bg: 'bg-cyan-50', border: 'border-cyan-200', icon_bg: 'bg-cyan-100', text: 'text-cyan-700' },
@@ -98,7 +98,7 @@ const quickLinks = [
 const stats = [
   { label: 'Net Profit', value: 45200, prefix: '₹', icon: '💰', color: 'from-green-400 to-green-600', textColor: 'text-green-600' },
   { label: 'Crops Tracked', value: 12, icon: '🌿', color: 'from-blue-400 to-blue-600', textColor: 'text-blue-600' },
-  { label: 'Diseases Found', value: 3, icon: '🔬', color: 'from-red-400 to-red-600', textColor: 'text-red-600' },
+  { label: 'Crops Analysed', value: 3, icon: '🔬', color: 'from-red-400 to-red-600', textColor: 'text-red-600' },
   { label: 'Schemes Available', value: 8, icon: '🏛️', color: 'from-purple-400 to-purple-600', textColor: 'text-purple-600' },
 ];
 

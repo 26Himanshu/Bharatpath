@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const features = [
-  { icon: '🔬', title: 'AI Crop Disease Detection', desc: 'Upload a leaf photo — our AI instantly diagnoses disease and suggests treatment', color: 'bg-green-50 border-green-200', iconBg: 'bg-green-100' },
+  { icon: '🔬', title: 'AI Crop Health Analysis', desc: 'Upload a leaf photo — our AI instantly diagnoses crop health and suggests treatment', color: 'bg-green-50 border-green-200', iconBg: 'bg-green-100' },
   { icon: '📊', title: 'Smart Mandi Optimizer', desc: 'Get live government mandi prices and find the best market to sell your crop', color: 'bg-blue-50 border-blue-200', iconBg: 'bg-blue-100' },
   { icon: '🗺️', title: 'Mandi Map', desc: 'Find agricultural markets near you on an interactive map of India', color: 'bg-purple-50 border-purple-200', iconBg: 'bg-purple-100' },
   { icon: '🌤️', title: 'Farm Weather', desc: 'Real-time weather with farming advice and seasonal crop suggestions', color: 'bg-cyan-50 border-cyan-200', iconBg: 'bg-cyan-100' },
@@ -12,7 +12,7 @@ const features = [
 
 const stats = [
   { value: '3,000+', label: 'Mandis Covered', icon: '🏪' },
-  { value: '38', label: 'Crop Diseases Detected', icon: '🌿' },
+  { value: '38', label: 'Crop Health Detected', icon: '🌿' },
   { value: '8+', label: 'Govt Schemes Listed', icon: '🏛️' },
   { value: '700+', label: 'Indian Cities Weather', icon: '🌤️' },
 ];
@@ -55,7 +55,7 @@ export default function HomePage() {
             </p>
             <p className="text-green-200 text-lg mb-8 max-w-2xl mx-auto">
               AI-powered decision support system for Indian farmers —
-              crop disease detection, live mandi prices, weather forecasts and government schemes
+              crop health detection, live mandi prices, weather forecasts and government schemes
             </p>
 
             <div className="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-4">
